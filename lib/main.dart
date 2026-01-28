@@ -3,8 +3,14 @@ import 'package:eventify/pages/signup.dart';
 import 'package:flutter/material.dart';
 import 'pages/home.dart'; // obavezno uključi fajl gde se nalazi Home widget
 import 'pages/bottomnav.dart';
+import 'package:firebase_core/firebase_core.dart'; // ovo je za Firebase
 
-void main() {
+
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   runApp(const MyApp());
 }
 

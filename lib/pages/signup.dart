@@ -1,3 +1,4 @@
+import 'package:eventify/services/auth.dart';
 import 'package:flutter/material.dart';
 
 class SignUp extends StatefulWidget {
@@ -46,34 +47,39 @@ class _SignUpState extends State<SignUp> {
               style: TextStyle(color: Colors.black, fontSize: 12.0),
             ),
             SizedBox(height: 20.0),
-            Container(
-              height:60,
-              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-              margin: EdgeInsets.only(left:20, right: 20),
-              decoration: BoxDecoration(
-                color: Color(0xff6351ec),
-                borderRadius: BorderRadius.circular(40.0),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    "images/google.png",
-                    width: 30,
-                    height: 30,
-                    fit: BoxFit.cover,
-                  ),
-                  SizedBox(width: 20.0),
-                  Text(
-                    "Nastavi sa Google nalogom",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 17.0,
-                      fontWeight: FontWeight.bold,
+            GestureDetector(
+              onTap: () {
+                AuthMethods().signInWithGoogle(context);
+              },
+              child: Container(
+                height:60,
+                padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                margin: EdgeInsets.only(left:20, right: 20),
+                decoration: BoxDecoration(
+                  color: Color(0xff6351ec),
+                  borderRadius: BorderRadius.circular(40.0),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "images/google.png",
+                      width: 30,
+                      height: 30,
+                      fit: BoxFit.cover,
                     ),
-                  ),
-                ],
+                    SizedBox(width: 20.0),
+                    Text(
+                      "Nastavi sa Google nalogom",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 17.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
