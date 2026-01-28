@@ -30,7 +30,7 @@ class _HomeState extends State<Home> {
               children: [
                 Row(
                   children: const [
-                    Icon(Icons.location_on_outlined, color: Colors.black54),
+                    Icon(Icons.location_on, color: Colors.black),
                     SizedBox(width: 5),
                     Text(
                       "Srbija",
@@ -56,7 +56,7 @@ class _HomeState extends State<Home> {
                   "Postoji 10 zanimljivih događaja\nu tvojoj blizini.",
                   style: TextStyle(
                     color: Color(0xff6351ec),
-                    fontSize: 22.0,
+                    fontSize: 21.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -80,7 +80,7 @@ class _HomeState extends State<Home> {
                     decoration: InputDecoration(
                       suffixIcon: Icon(Icons.search_outlined),
                       border: InputBorder.none,
-                      hintText: "Pretraži događaje",
+                      hintText: "Pretraži",
                     ),
                   ),
                 ),
@@ -353,7 +353,7 @@ class _HomeState extends State<Home> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 18.0,
+                        fontSize: 16.0,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
