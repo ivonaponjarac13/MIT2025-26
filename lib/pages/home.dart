@@ -12,9 +12,9 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        // <-- Dodano
+        
         child: SingleChildScrollView(
-          // <-- Dodano
+          
           child: Container(
             padding: const EdgeInsets.only(right: 20, top: 20, left: 20.0),
             width: MediaQuery.of(context).size.width,

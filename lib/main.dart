@@ -1,3 +1,4 @@
+import 'package:eventify/admin/upload_event.dart';
 import 'package:eventify/pages/detail_page.dart';
 import 'package:eventify/pages/signup.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home:  SignUp(), // dodali smo const
+      home:  UploadEvent(), // dodali smo const
     );
   }
 }
