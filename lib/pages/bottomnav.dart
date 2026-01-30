@@ -3,6 +3,8 @@ import 'package:eventify/pages/booking.dart';
 import 'package:eventify/pages/home.dart';
 import 'package:eventify/pages/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:eventify/pages/booking.dart';
+
 
 
 class BottomNav extends StatefulWidget {

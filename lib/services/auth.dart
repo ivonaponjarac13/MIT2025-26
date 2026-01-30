@@ -6,29 +6,35 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthMethods {
   final FirebaseAuth auth = FirebaseAuth.instance;
-  getCurrentUser() async {
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
+  // Dohvati trenutnog korisnika
+  Future<User?> getCurrentUser() async {
     return await auth.currentUser;
   }
 
-  signInWithGoogle(BuildContext context) async {
-    final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-    final GoogleSignInAccount? googleSignInAccount = await googleSignIn
-        .signIn();
-    final GoogleSignInAuthentication? googleSignInAuthentication =
-        await googleSignInAccount?.authentication;
+  // Prijava preko Google
+  Future<User?> signInWithGoogle(BuildContext context) async {
+    final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+    if (googleSignInAccount == null) return null;
+
+    final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
+
     final AuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleSignInAuthentication?.accessToken,
-      idToken: googleSignInAuthentication?.idToken,
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
     );
-    UserCredential result = await firebaseAuth.signInWithCredential(credential);
+
+    UserCredential result = await auth.signInWithCredential(credential);
     User? userDetails = result.user;
-    if (result != null) {
+
+    if (userDetails != null) {
       Map<String, dynamic> userInfoMap = {
-        "Name": userDetails!.displayName,
-        "Image": userDetails?.photoURL,
-        "email": userDetails?.email,
-        "Id": userDetails?.uid,
+        "Name": userDetails.displayName,
+        "Image": userDetails.photoURL,
+        "email": userDetails.email,
+        "Id": userDetails.uid,
       };
 
       await DatabaseMethods().addUserDetail(userInfoMap, userDetails.uid);
@@ -48,5 +54,16 @@ class AuthMethods {
         MaterialPageRoute(builder: (context) => BottomNav()),
       );
     }
+
+    return userDetails;
+  }
+
+  // **Odjava**
+  Future<void> signOut(BuildContext context) async {
+    await googleSignIn.signOut(); // odjava sa Google
+    await auth.signOut();          // odjava sa Firebase
+
+    // Vrati korisnika na stranicu za prijavu (SignUp)
+    Navigator.pushReplacementNamed(context, '/signup');
   }
 }
