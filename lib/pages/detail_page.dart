@@ -1,15 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+
+Future<String> fetchWeather(String city) async {
+  const apiKey = '3b7694eabd1d6f356b47bb5bf4b85d79';
+  final url =
+      'https://api.openweathermap.org/data/2.5/weather?q=$city&units=metric&appid=$apiKey';
+
+  print("Fetching weather for: $city"); // << debug
+  final response = await http.get(Uri.parse(url));
+  print("Response status: ${response.statusCode}");
+  print("Response body: ${response.body}");
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    return "${data['main']['temp']}°C, ${data['weather'][0]['description']}";
+  } else {
+    return "Vreme nije dostupno";
+  }
+}
+
 
 class DetailPage extends StatefulWidget {
   final String? image;
   final String? name;
   final String? location;
   final String? date;
-  final String? time; // satnica događaja
+  final String? time;
   final String? detail;
-  final String? price; // cijena JEDNE karte iz Firebase-a
+  final String? price;
 
   const DetailPage({
     super.key,
@@ -56,7 +78,6 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   void openFakePayment() {
-    // Kontroleri za textfield-e
     final cardController = TextEditingController();
     final expiryController = TextEditingController();
     final cvvController = TextEditingController();
@@ -88,7 +109,6 @@ class _DetailPageState extends State<DetailPage> {
         actions: [
           TextButton(
             onPressed: () async {
-              // Provjera da li su svi podaci uneseni
               if (cardController.text.isEmpty ||
                   expiryController.text.isEmpty ||
                   cvvController.text.isEmpty) {
@@ -98,13 +118,10 @@ class _DetailPageState extends State<DetailPage> {
                     backgroundColor: Colors.red,
                   ),
                 );
-                return; // izlaz iz funkcije, ne zatvara dialog
+                return;
               }
 
-              // Ako su podaci uneseni, zatvori dialog
               Navigator.pop(context);
-
-              // Spremi kupovinu u Firebase
               await saveBookingToFirebase();
 
               ScaffoldMessenger.of(context).showSnackBar(
@@ -128,7 +145,6 @@ class _DetailPageState extends State<DetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 🌆 Slika sa overlay-om za naziv, datum i lokaciju
             Stack(
               children: [
                 Image.asset(
@@ -144,7 +160,6 @@ class _DetailPageState extends State<DetailPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Naziv događaja
                       Text(
                         widget.name ?? "",
                         style: const TextStyle(
@@ -161,37 +176,28 @@ class _DetailPageState extends State<DetailPage> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      // Datum i lokacija
                       Row(
                         children: [
-                          const Icon(
-                            Icons.calendar_today,
-                            color: Colors.white,
-                            size: 16,
-                          ),
+                          const Icon(Icons.calendar_today,
+                              color: Colors.white, size: 16),
                           const SizedBox(width: 4),
                           Text(
                             widget.date ?? "",
                             style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500),
                           ),
                           const SizedBox(width: 20),
-                          const Icon(
-                            Icons.location_on,
-                            color: Colors.white,
-                            size: 16,
-                          ),
+                          const Icon(Icons.location_on,
+                              color: Colors.white, size: 16),
                           const SizedBox(width: 4),
                           Text(
                             widget.location ?? "",
                             style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500),
                           ),
                         ],
                       ),
@@ -211,38 +217,67 @@ class _DetailPageState extends State<DetailPage> {
               ),
             ),
 
+            
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: FutureBuilder<String>(
+                future: fetchWeather(widget.location ?? "Belgrade"),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const Row(
+                      children: [
+                        Icon(Icons.cloud, color: Colors.grey),
+                        SizedBox(width: 8),
+                        Text("Učitavanje vremenske prognoze..."),
+                      ],
+                    );
+                  }
+
+                  return Row(
+                    children: [
+                      const Icon(Icons.cloud,
+                          color: Color(0xff6351ec)),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Vrijeme: ${snapshot.data}",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
                   const Text(
                     "Ulaznice:",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(width: 20),
                   IconButton(
                     onPressed: ticket > 1
-                        ? () {
-                            setState(() {
-                              ticket--;
-                            });
-                          }
+                        ? () => setState(() => ticket--)
                         : null,
                     icon: const Icon(Icons.remove),
                   ),
                   Text(
                     ticket.toString(),
                     style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 28, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
-                    onPressed: () {
-                      setState(() {
-                        ticket++;
-                      });
-                    },
+                    onPressed: () =>
+                        setState(() => ticket++),
                     icon: const Icon(Icons.add),
                   ),
                 ],
@@ -251,7 +286,6 @@ class _DetailPageState extends State<DetailPage> {
 
             const SizedBox(height: 30),
 
-            /// 💰 UKUPNA CIJENA
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -265,42 +299,34 @@ class _DetailPageState extends State<DetailPage> {
                       color: Color(0xff6351ec),
                     ),
                   ),
-
                   ElevatedButton(
                     onPressed: () {
                       final user = _auth.currentUser;
                       if (user == null) {
-                        // Ako nije prijavljen
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text(
-                              "Morate biti prijavljeni da biste kupili kartu!",
-                            ),
+                                "Morate biti prijavljeni da biste kupili kartu!"),
                             backgroundColor: Colors.red,
                           ),
                         );
                       } else {
-                        // Ako je prijavljen, otvori plaćanje
                         openFakePayment();
                       }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xff6351ec),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 25,
-                        vertical: 12,
-                      ),
+                          horizontal: 25, vertical: 12),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                     child: const Text(
                       "Plati",
                       style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                   ),
                 ],

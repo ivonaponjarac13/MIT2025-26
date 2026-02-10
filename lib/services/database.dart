@@ -17,7 +17,7 @@ class DatabaseMethods {
 
   Stream<QuerySnapshot> getAllEvents() {
     return FirebaseFirestore.instance
-        .collection("event") // naziv kolekcije
+        .collection("event") 
         .snapshots();
   }
 
@@ -30,7 +30,7 @@ class DatabaseMethods {
 
    Stream<QuerySnapshot<Map<String, dynamic>>> getUserBookedEvents(String userId) {
     return FirebaseFirestore.instance
-        .collection("user_bookings") // ili kako se zove tvoja kolekcija sa kupljenim kartama
+        .collection("user_bookings") 
         .where("userId", isEqualTo: userId)
         .snapshots();
   }

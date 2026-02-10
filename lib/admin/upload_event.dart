@@ -25,12 +25,15 @@ class _UploadEventState extends State<UploadEvent> {
     "Film",
   ];
 
+
+
+
   String? value;
   final ImagePicker _picker = ImagePicker();
-  File? previewImage; // samo za prikaz iz galerije
-  String? finalAssetImage; // prava slika koja se dodaje (assets)
+  File? previewImage; 
+  String? finalAssetImage; 
 
-  // mapa kategorija → asset slika
+ 
   Map<String, String> categoryImages = {
     "Koncert": "images/koncert.jpg",
     "Sportski događaj": "images/utakmica.jpg",
@@ -160,7 +163,6 @@ class _UploadEventState extends State<UploadEvent> {
 
               SizedBox(height: 20),
 
-              // ---- PRIKAZ SLIKE / PLACEHOLDER ----
               Center(
                 child: previewImage != null
                     ? Image.file(

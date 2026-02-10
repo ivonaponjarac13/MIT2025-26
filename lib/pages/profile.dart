@@ -265,7 +265,7 @@ class _ProfileState extends State<Profile> {
   }
 }
 
-/// Stranica Moji događaji (premium UI)
+
 class MyEventsPage extends StatelessWidget {
   final String userId;
   const MyEventsPage({super.key, required this.userId});
